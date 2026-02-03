@@ -1,7 +1,7 @@
 import fastify from "fastify";
 
-export const app = fastify()
+export const app = fastify();
 
 app.get("/", async () => {
-    return { message: "Hello World!" };
-})
+  return { message: "Hello World!" };
+});
