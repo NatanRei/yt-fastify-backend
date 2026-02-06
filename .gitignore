@@ -3,4 +3,4 @@ dist
 
 .env
 /src/generated/prisma
-./prisma/dev.db
+prisma/dev.db
