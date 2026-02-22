@@ -5,6 +5,7 @@ import fastifyCookie from "@fastify/cookie";
 import cors from "@fastify/cors";
 import fastifyJwt from "@fastify/jwt";
 
+import { authenticate } from "./decorators";
 import { env } from "./env";
 import { usersRoutes } from "./http/controllers/users/routes";
 
@@ -19,6 +20,8 @@ app.register(cors, {
 app.register(fastifyJwt, {
   secret: env.JWT_SECRET,
 });
+
+app.decorate("authenticate", authenticate);
 
 app.addHook("preHandler", (req, _, next) => {
   req.jwt = app.jwt;
