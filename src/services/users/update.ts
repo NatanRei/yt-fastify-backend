@@ -1,6 +1,6 @@
 import { ResourceNotFoundError } from "@/errors/resource-not-found-error";
 import { updateBodySchema } from "@/http/controllers/users/update-user";
-import { prisma } from "@/lib/prisma";
+import { UserRepository } from "@/http/repositories/user-repository";
 import z from "zod";
 
 type UpdateUserServiceProps = z.infer<typeof updateBodySchema> & {
@@ -8,25 +8,17 @@ type UpdateUserServiceProps = z.infer<typeof updateBodySchema> & {
 };
 
 export class UpdateUserService {
+  constructor(private userRepository: UserRepository) {}
+
   async execute({ id, name, email }: UpdateUserServiceProps) {
-    const user = await prisma.user.findUnique({
-      where: {
-        id,
-      },
-    });
+    const user = await this.userRepository.findById(id);
 
     if (!user) {
       throw new ResourceNotFoundError(
-        "Falha ao deletar usuário, usuário não encontrado",
+        "Falha ao atualizar usuário, usuário não encontrado",
       );
     }
 
-    await prisma.user.update({
-      where: { id },
-      data: {
-        name,
-        email,
-      },
-    });
+    await this.userRepository.update(id, { name, email });
   }
 }

@@ -1,17 +1,15 @@
 import { ResourceNotFoundError } from "@/errors/resource-not-found-error";
-import { prisma } from "@/lib/prisma";
+import { UserRepository } from "@/http/repositories/user-repository";
 
 type DeleteUserServiceProps = {
   id: string;
 };
 
 export class DeleteUserService {
+  constructor(private userRepository: UserRepository) {}
+
   async execute({ id }: DeleteUserServiceProps) {
-    const user = await prisma.user.findUnique({
-      where: {
-        id,
-      },
-    });
+    const user = await this.userRepository.findById(id);
 
     if (!user) {
       throw new ResourceNotFoundError(
@@ -19,8 +17,6 @@ export class DeleteUserService {
       );
     }
 
-    await prisma.user.delete({
-      where: { id },
-    });
+    await this.userRepository.delete(id);
   }
 }
