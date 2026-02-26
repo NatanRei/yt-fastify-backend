@@ -1,6 +1,11 @@
-import { prisma } from "@/lib/prisma";
+import { UpdateUserService } from "@/services/users/update";
 import { FastifyReply, FastifyRequest } from "fastify";
 import z from "zod";
+
+export const updateBodySchema = z.object({
+  name: z.string({ message: "Name is required" }),
+  email: z.email({ message: "Email is required" }),
+});
 
 export async function updateUser(req: FastifyRequest, res: FastifyReply) {
   const updateUserIdSchema = z.object({
@@ -9,20 +14,11 @@ export async function updateUser(req: FastifyRequest, res: FastifyReply) {
 
   const { id } = updateUserIdSchema.parse(req.params);
 
-  const updateBodySchema = z.object({
-    name: z.string({ message: "Name is required" }),
-    email: z.email({ message: "Email is required" }),
-  });
-
   const { name, email } = updateBodySchema.parse(req.body);
 
-  await prisma.user.update({
-    where: { id },
-    data: {
-      name,
-      email,
-    },
-  });
+  const updateUserService = new UpdateUserService();
+
+  await updateUserService.execute({ id, name, email });
 
   return res.status(204).send();
 }

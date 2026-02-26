@@ -1,4 +1,4 @@
-import { prisma } from "@/lib/prisma";
+import { UserDetailsService } from "@/services/users/details";
 import { FastifyReply, FastifyRequest } from "fastify";
 import z from "zod";
 
@@ -9,16 +9,15 @@ export async function userDetails(req: FastifyRequest, res: FastifyReply) {
 
   const { id } = getUserSchema.parse(req.params);
 
-  const user = await prisma.user.findUnique({
-    where: { id },
-    select: {
-      id: true,
-      name: true,
-      email: true,
-      createdAt: true,
-      updatedAt: true,
-    },
-  });
+  const userDetailsService = new UserDetailsService();
 
-  return res.send(user);
+  try {
+    const user = await userDetailsService.execute({ id });
+
+    return res.send(user);
+  } catch (err) {
+    if (err instanceof Error) {
+      return res.status(400).send({ message: err.message });
+    }
+  }
 }

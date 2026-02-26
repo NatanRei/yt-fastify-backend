@@ -1,38 +1,20 @@
-import { InvalidCredentialsError } from "@/errors/invalid-credentials-error";
-import { ResourceNotFoundError } from "@/errors/resource-not-found-error";
-import { prisma } from "@/lib/prisma";
-import { compare } from "bcryptjs";
+import { AuthenticateService } from "@/services/users/authenticate";
 import { FastifyReply, FastifyRequest } from "fastify";
 import z from "zod";
 
+export const authenticateBodySchema = z.object({
+  email: z.email({ message: "Email is required" }),
+  password: z.string({ message: "Password is required" }),
+});
+
 export async function authenticate(req: FastifyRequest, res: FastifyReply) {
-  const registerBodySchema = z.object({
-    email: z.email({ message: "Email is required" }),
-    password: z.string({ message: "Password is required" }),
-  });
+  const data = authenticateBodySchema.parse(req.body);
 
-  const { email, password } = registerBodySchema.parse(req.body);
+  const authenticateService = new AuthenticateService();
 
-  const user = await prisma.user.findUnique({
-    where: {
-      email,
-    },
-  });
-
-  if (!user) {
-    throw new ResourceNotFoundError(
-      "Falha ao autenticar, email ou senha inválidos",
-    );
-  }
-
-  const isPasswordValid = await compare(password, user.passwordHash);
-
-  if (!isPasswordValid) {
-    throw new InvalidCredentialsError();
-  }
-
-  const token = req.jwt.sign({
-    sub: user.id,
+  const token = await authenticateService.execute({
+    ...data,
+    sign: req.jwt.sign,
   });
 
   return res
@@ -44,8 +26,5 @@ export async function authenticate(req: FastifyRequest, res: FastifyReply) {
       maxAge: 60 * 60,
     })
     .status(200)
-    .send({
-      ...user,
-      passwordHash: undefined,
-    });
+    .send();
 }
