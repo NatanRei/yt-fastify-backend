@@ -1,4 +1,4 @@
-import { UserDetailsService } from "@/services/users/details";
+import { makeUserDetailsService } from "@/factories/users/make-user-details-service";
 import { FastifyReply, FastifyRequest } from "fastify";
 import z from "zod";
 
@@ -9,7 +9,7 @@ export async function userDetails(req: FastifyRequest, res: FastifyReply) {
 
   const { id } = getUserSchema.parse(req.params);
 
-  const userDetailsService = new UserDetailsService();
+  const userDetailsService = makeUserDetailsService();
 
   try {
     const user = await userDetailsService.execute({ id });

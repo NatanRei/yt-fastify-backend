@@ -1,4 +1,4 @@
-import { UpdateUserService } from "@/services/users/update";
+import { makeUpdateUserService } from "@/factories/users/make-update-user-service";
 import { FastifyReply, FastifyRequest } from "fastify";
 import z from "zod";
 
@@ -16,7 +16,7 @@ export async function updateUser(req: FastifyRequest, res: FastifyReply) {
 
   const { name, email } = updateBodySchema.parse(req.body);
 
-  const updateUserService = new UpdateUserService();
+  const updateUserService = makeUpdateUserService();
 
   await updateUserService.execute({ id, name, email });
 

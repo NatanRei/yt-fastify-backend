@@ -1,4 +1,4 @@
-import { DeleteUserService } from "@/services/users/delete";
+import { makeDeleteUserService } from "@/factories/users/make-delete-user-service";
 import { FastifyReply, FastifyRequest } from "fastify";
 import z from "zod";
 
@@ -9,7 +9,7 @@ export async function deleteUser(req: FastifyRequest, res: FastifyReply) {
 
   const { id } = deleteUserSchema.parse(req.params);
 
-  const deleteUserService = new DeleteUserService();
+  const deleteUserService = makeDeleteUserService();
 
   await deleteUserService.execute({ id });
 

@@ -1,4 +1,4 @@
-import { SearchUsersService } from "@/services/users/search";
+import { makeSearchUsersService } from "@/factories/users/make-search-users-service";
 import { FastifyReply, FastifyRequest } from "fastify";
 import z from "zod";
 
@@ -12,7 +12,7 @@ export const getUsersSchema = z.object({
 export async function searchUsers(req: FastifyRequest, res: FastifyReply) {
   const { name, email, page, perPage } = getUsersSchema.parse(req.query);
 
-  const searchUsersService = new SearchUsersService();
+  const searchUsersService = makeSearchUsersService();
 
   const data = await searchUsersService.execute({
     name,

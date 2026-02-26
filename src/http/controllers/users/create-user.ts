@@ -1,4 +1,4 @@
-import { CreateUserService } from "@/services/users/create";
+import { makeCreateUserService } from "@/factories/users/make-create-user-service";
 import { FastifyReply, FastifyRequest } from "fastify";
 import z from "zod";
 
@@ -11,7 +11,7 @@ export const registerBodySchema = z.object({
 export async function createUser(req: FastifyRequest, res: FastifyReply) {
   const { name, email, password } = registerBodySchema.parse(req.body);
 
-  const createUserService = new CreateUserService();
+  const createUserService = makeCreateUserService();
 
   const user = await createUserService.execute({
     name,
