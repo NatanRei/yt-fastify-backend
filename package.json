@@ -8,7 +8,10 @@
     "build": "tsup src/server.ts --out-dir dist --format cjs",
     "start": "node dist/server.js",
     "db:migrate": "prisma migrate dev",
-    "db:generate": "prisma generate"
+    "db:generate": "prisma generate",
+    "test": "vitest",
+    "test:watch": "vitest --watch",
+    "test:coverage": "vitest run --coverage"
   },
   "keywords": [],
   "author": "",
@@ -16,10 +19,13 @@
   "description": "",
   "devDependencies": {
     "@types/node": "^25.2.0",
+    "@vitest/coverage-v8": "^4.0.18",
     "prisma": "^7.3.0",
     "tsup": "^8.5.1",
     "tsx": "^4.21.0",
-    "typescript": "^5.9.3"
+    "typescript": "^5.9.3",
+    "vite-tsconfig-paths": "^6.1.1",
+    "vitest": "^4.0.18"
   },
   "dependencies": {
     "@fastify/cookie": "^11.0.2",
