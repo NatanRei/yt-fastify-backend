@@ -1,28 +1,27 @@
 import { ResourceNotFoundError } from "@/errors/resource-not-found-error";
 import { UserInMemoryRepository } from "@/http/repositories/in-memory/user-in-memory-repository";
-import { UserDetailsService } from "@/services/users/details";
+import { DeleteUserService } from "@/services/users/delete";
 import { beforeEach, describe, expect, it } from "vitest";
 
 let repository: UserInMemoryRepository;
-let service: UserDetailsService;
+let service: DeleteUserService;
 
-describe("Get User Details", () => {
+describe("Delete User", () => {
   beforeEach(() => {
     repository = new UserInMemoryRepository();
-    service = new UserDetailsService(repository);
+    service = new DeleteUserService(repository);
   });
 
-  it("should be able to return a user", async () => {
+  it("should be able to delete a user", async () => {
     const createdUser = await repository.create({
       name: "Natan",
       email: "natan@reis.com",
       passwordHash: "123456",
     });
 
-    const result = await service.execute({ id: createdUser.id });
+    await service.execute({ id: createdUser.id });
 
-    expect(result.id).toBe(createdUser.id);
-    expect(repository.items[0].id).toBe(result.id);
+    expect(repository.items).toHaveLength(0);
   });
 
   it("should be able to throw an ResourceNotFoundError", async () => {

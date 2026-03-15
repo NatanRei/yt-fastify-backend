@@ -1,33 +1,43 @@
 import { ResourceNotFoundError } from "@/errors/resource-not-found-error";
 import { UserInMemoryRepository } from "@/http/repositories/in-memory/user-in-memory-repository";
-import { UserDetailsService } from "@/services/users/details";
+import { UpdateUserService } from "@/services/users/update";
 import { beforeEach, describe, expect, it } from "vitest";
 
 let repository: UserInMemoryRepository;
-let service: UserDetailsService;
+let service: UpdateUserService;
 
-describe("Get User Details", () => {
+describe("Update User", () => {
   beforeEach(() => {
     repository = new UserInMemoryRepository();
-    service = new UserDetailsService(repository);
+    service = new UpdateUserService(repository);
   });
 
-  it("should be able to return a user", async () => {
+  it("should be able to update a user", async () => {
     const createdUser = await repository.create({
       name: "Natan",
       email: "natan@reis.com",
       passwordHash: "123456",
     });
 
-    const result = await service.execute({ id: createdUser.id });
+    const updatedUser = {
+      id: createdUser.id,
+      name: "Natan Reis",
+      email: "natan+1@reis.com",
+    };
 
-    expect(result.id).toBe(createdUser.id);
-    expect(repository.items[0].id).toBe(result.id);
+    await service.execute(updatedUser);
+
+    expect(repository.items[0].name).toBe(updatedUser.name);
+    expect(repository.items[0].email).toBe(updatedUser.email);
   });
 
   it("should be able to throw an ResourceNotFoundError", async () => {
     await expect(
-      service.execute({ id: "not-found-id" }),
+      service.execute({
+        id: "not-found-id",
+        name: "Natan Reis",
+        email: "natan+1@reis.com",
+      }),
     ).rejects.toBeInstanceOf(ResourceNotFoundError);
   });
 });
