@@ -19,6 +19,14 @@ export class UserPrismaRepository implements UserRepository {
     });
   }
 
+  async findByEmail(email: string) {
+    return await prisma.user.findUnique({
+      where: {
+        email,
+      },
+    });
+  }
+
   async create({
     name,
     email,

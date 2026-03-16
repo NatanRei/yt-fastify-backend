@@ -1,7 +1,7 @@
 import { InvalidCredentialsError } from "@/errors/invalid-credentials-error";
 import { ResourceNotFoundError } from "@/errors/resource-not-found-error";
 import { authenticateBodySchema } from "@/http/controllers/users/authenticate";
-import { prisma } from "@/lib/prisma";
+import { UserRepository } from "@/http/repositories/user-repository";
 import { compare } from "bcryptjs";
 import z from "zod";
 
@@ -10,12 +10,10 @@ type AuthenticateServiceProps = z.infer<typeof authenticateBodySchema> & {
 };
 
 export class AuthenticateService {
+  constructor(private userRepository: UserRepository) {}
+
   async execute({ email, password, sign }: AuthenticateServiceProps) {
-    const user = await prisma.user.findUnique({
-      where: {
-        email,
-      },
-    });
+    const user = await this.userRepository.findByEmail(email);
 
     if (!user) {
       throw new ResourceNotFoundError(

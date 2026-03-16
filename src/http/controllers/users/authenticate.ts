@@ -1,4 +1,4 @@
-import { AuthenticateService } from "@/services/users/authenticate";
+import { makeAuthenticateService } from "@/factories/users/make-authenticate-service";
 import { FastifyReply, FastifyRequest } from "fastify";
 import z from "zod";
 
@@ -10,7 +10,7 @@ export const authenticateBodySchema = z.object({
 export async function authenticate(req: FastifyRequest, res: FastifyReply) {
   const data = authenticateBodySchema.parse(req.body);
 
-  const authenticateService = new AuthenticateService();
+  const authenticateService = makeAuthenticateService();
 
   const token = await authenticateService.execute({
     ...data,

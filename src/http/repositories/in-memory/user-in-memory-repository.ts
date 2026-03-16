@@ -16,6 +16,16 @@ export class UserInMemoryRepository implements UserRepository {
     return userWithoutPassword;
   }
 
+  async findByEmail(email: string): Promise<User | null> {
+    const user = this.items.find((item) => item.email === email);
+
+    if (!user) {
+      return null;
+    }
+
+    return user;
+  }
+
   async create(data: Prisma.UserCreateInput): Promise<User> {
     const user: User = {
       id: crypto.randomUUID(),
